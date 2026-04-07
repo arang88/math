@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dino Matematik & Hafazan</title>
+  <style>
+    :root {
+      --bg1: #f8fff1;
+      --bg2: #d9fff2;
+      --primary: #2ec27e;
+      --primary-dark: #18935a;
+      --secondary: #ffb703;
+      --secondary-dark: #f28c00;
+      --pink: #ff6b9d;
+      --sky: #57c7ff;
+      --purple: #7b61ff;
+      --danger: #ff5d5d;
+      --text: #24313a;
+      --muted: #5b707d;
+      --card: rgba(255, 255, 255, 0.92);
+      --shadow: 0 16px 40px rgba(31, 60, 42, 0.15);
+      --radius: 26px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.9) 0 8%, transparent 8.1%),
+        radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.75) 0 7%, transparent 7.1%),
+        radial-gradient(circle at 30% 30%, rgba(255, 230, 120, 0.18) 0 12%, transparent 12.1%),
+        linear-gradient(180deg, #9be9ff 0%, #d7fff5 34%, #f7fff5 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto auto 0 0;
+      width: 100%;
+      height: 170px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 8% 100%, #86d37a 0 21%, transparent 21.2%),
+        radial-gradient(circle at 18% 100%, #73c468 0 18%, transparent 18.2%),
+        radial-gradient(circle at 32% 100%, #98dc8a 0 20%, transparent 20.2%),
+        radial-gradient(circle at 47% 100%, #7acc6f 0 22%, transparent 22.2%),
+        radial-gradient(circle at 63% 100%, #8fdc81 0 19%, transparent 19.2%),
+        radial-gradient(circle at 79% 100%, #74c56a 0 17%, transparent 17.2%),
+        radial-gradient(circle at 92% 100%, #8ee18b 0 20%, transparent 20.2%);
+      opacity: 0.9;
+    }
+
+    body::after {
+      height: 85px;
+      background: linear-gradient(180deg, transparent 0%, rgba(119, 200, 112, 0.15) 20%, rgba(119, 200, 112, 0.45) 100%);
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 22px 18px 120px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(236,255,248,0.94));
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      border: 3px solid rgba(255,255,255,0.85);
+      backdrop-filter: blur(5px);
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1.05;
+      color: #16653f;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 1.05rem;
+      color: var(--muted);
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      background: white;
+      box-shadow: 0 8px 20px rgba(70, 109, 84, 0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-dino {
+      background: linear-gradient(180deg, #fffefb, #eefdf6);
+      border-radius: 28px;
+      min-height: 250px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      border: 3px dashed rgba(46, 194, 126, 0.25);
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.8);
+      border-radius: 999px;
+      filter: blur(0.3px);
+    }
+    .cloud.one { width: 94px; height: 32px; top: 28px; left: 22px; }
+    .cloud.two { width: 70px; height: 24px; top: 65px; right: 22px; }
+
+    .hero-dino .emoji {
+      font-size: clamp(6.5rem, 15vw, 8.5rem);
+      animation: bob 2.8s ease-in-out infinite;
+      filter: drop-shadow(0 16px 12px rgba(72, 140, 99, 0.18));
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(-2deg); }
+    }
+
+    .menu-grid,
+    .difficulty-grid,
+    .surah-grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .menu-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .difficulty-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .surah-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      border: 3px solid rgba(255,255,255,0.85);
+      backdrop-filter: blur(6px);
+    }
+
+    .big-btn, .small-btn, .icon-btn, .answer-btn, .nav-btn, .sound-fab {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .big-btn:hover, .small-btn:hover, .icon-btn:hover, .answer-btn:hover, .nav-btn:hover, .sound-fab:hover {
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    .big-btn:active, .small-btn:active, .icon-btn:active, .answer-btn:active, .nav-btn:active, .sound-fab:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .big-btn {
+      width: 100%;
+      min-height: 170px;
+      border-radius: 30px;
+      padding: 18px;
+      color: white;
+      box-shadow: var(--shadow);
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .big-btn h2 { margin: 0 0 10px; font-size: 1.6rem; }
+    .big-btn p { margin: 0; font-size: 1rem; opacity: 0.95; }
+    .big-btn .btn-emoji { font-size: 3.2rem; position: absolute; right: 14px; bottom: 10px; }
+    .big-btn.add { background: linear-gradient(135deg, #2ec27e, #51d4ff); }
+    .big-btn.sub { background: linear-gradient(135deg, #ff8f70, #ffbf69); }
+    .big-btn.hfz { background: linear-gradient(135deg, #7b61ff, #ff6b9d); }
+
+    .small-btn {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: white;
+      font-size: 1.08rem;
+      color: var(--text);
+      box-shadow: 0 12px 24px rgba(48, 82, 69, 0.10);
+    }
+
+    .small-btn.easy { border: 3px solid #7ed957; }
+    .small-btn.medium { border: 3px solid #ffb703; }
+    .small-btn.hard { border: 3px solid #ff6b6b; }
+
+    .nav-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .nav-btn {
+      background: white;
+      padding: 12px 16px;
+      border-radius: 18px;
+      box-shadow: 0 8px 18px rgba(38, 54, 66, 0.1);
+      color: var(--text);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 10px;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      color: #13553b;
+    }
+
+    .section-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .hidden { display: none !important; }
+
+    .quiz-wrap {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat-box {
+      background: white;
+      border-radius: 20px;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(44, 73, 56, 0.09);
+    }
+
+    .stat-box .num { font-size: 1.8rem; font-weight: 900; color: #0f7b4b; }
+    .stat-box .label { font-size: 0.95rem; color: var(--muted); }
+
+    .question-box {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      padding: 24px;
+      background: linear-gradient(180deg, #fffef8, #f6fff9);
+    }
+
+    .question-label {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .question-text {
+      font-size: clamp(2.7rem, 8vw, 4.6rem);
+      font-weight: 900;
+      color: #1a5d3d;
+      line-height: 1.1;
+    }
+
+    .dino-cheer {
+      font-size: 3.2rem;
+      animation: bob 2.2s ease-in-out infinite;
+    }
+
+    .answers-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .answer-btn {
+      padding: 18px 14px;
+      border-radius: 22px;
+      background: white;
+      color: var(--text);
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      box-shadow: 0 12px 20px rgba(37, 62, 49, 0.09);
+    }
+
+    .answer-btn.correct {
+      background: linear-gradient(135deg, #2ec27e, #94f7b4);
+      color: #08351d;
+    }
+
+    .answer-btn.wrong {
+      background: linear-gradient(135deg, #ff8383, #ffd3d3);
+      color: #611919;
+    }
+
+    .message {
+      min-height: 60px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: #13553b;
+    }
+
+    .surah-card {
+      background: linear-gradient(180deg, #ffffff, #f7faff);
+      padding: 16px;
+      border-radius: 22px;
+      box-shadow: 0 12px 24px rgba(28, 45, 66, 0.1);
+      border: 2px solid rgba(123, 97, 255, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .surah-card h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      color: #20304f;
+    }
+
+    .surah-card .tag {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f0ebff;
+      color: #5a43d2;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .ayah-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .ayah-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+      background: linear-gradient(180deg, #fff, #f6fff9);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 12px 22px rgba(28, 63, 39, 0.08);
+      border: 2px solid rgba(46, 194, 126, 0.1);
+    }
+
+    .ayah-badge {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #ffb703, #ffd86d);
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: #5a3d00;
+      box-shadow: 0 10px 18px rgba(255, 183, 3, 0.2);
+    }
+
+    .ayah-text {
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      line-height: 1.9;
+      text-align: right;
+      direction: rtl;
+      color: #183020;
+    }
+
+    .icon-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #7b61ff, #57c7ff);
+      color: white;
+      font-size: 1.6rem;
+      box-shadow: 0 14px 24px rgba(73, 82, 190, 0.22);
+    }
+
+    .audio-hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.82);
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 0.96rem;
+      box-shadow: 0 8px 18px rgba(38, 54, 66, 0.08);
+    }
+
+    .sound-fab {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 50;
+      padding: 14px 16px;
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(135deg, #ff6b9d, #7b61ff);
+      box-shadow: 0 16px 28px rgba(88, 73, 186, 0.28);
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sound-fab.off {
+      background: linear-gradient(135deg, #98a4ad, #6b7880);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 26px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 860px) {
+      .hero, .quiz-wrap { grid-template-columns: 1fr; }
+      .ayah-card { grid-template-columns: 1fr; text-align: center; }
+      .ayah-text { text-align: right; }
+      .icon-btn { width: 100%; height: 56px; }
+    }
+
+    @media (max-width: 560px) {
+      .app { padding: 14px 12px 110px; }
+      .hero { padding: 16px; border-radius: 24px; }
+      .card { padding: 14px; border-radius: 22px; }
+      .answers-grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .stat-box { padding: 10px; }
+      .small-btn, .nav-btn { font-size: 0.98rem; }
+      .sound-fab { right: 12px; bottom: 12px; padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div>
+        <h1>🦕 Dino Matematik & Hafazan</h1>
+        <p>Aplikasi ceria untuk kanak-kanak belajar operasi tambah, operasi tolak dan semakan hafazan ayat demi ayat.</p>
+        <div class="hero-badges">
+          <span class="badge">🌈 Mesra kanak-kanak</span>
+          <span class="badge">🧠 Latihan mudah → susah</span>
+          <span class="badge">🎧 Audio ayat demi ayat</span>
+        </div>
+      </div>
+      <div class="hero-dino" aria-hidden="true">
+        <div class="cloud one"></div>
+        <div class="cloud two"></div>
+        <div class="emoji">🦖</div>
+      </div>
+    </section>
+
+    <section id="homeView" class="card">
+      <h2 class="section-title">✨ Pilih Pengembaraan Dino</h2>
+      <p class="section-subtitle">Tekan salah satu butang di bawah untuk mula bermain dan belajar.</p>
+      <div class="menu-grid">
+        <button class="big-btn add" onclick="openDifficulty('add')">
+          <h2>Operasi Tambah</h2>
+          <p>Belajar menambah nombor bersama dino hijau.</p>
+          <span class="btn-emoji">➕🦕</span>
+        </button>
+        <button class="big-btn sub" onclick="openDifficulty('sub')">
+          <h2>Operasi Tolak</h2>
+          <p>Asah kemahiran menolak dengan dino oren.</p>
+          <span class="btn-emoji">➖🦖</span>
+        </button>
+        <button class="big-btn hfz" onclick="openHafazan()">
+          <h2>Hafazan</h2>
+          <p>Dengar bacaan ayat demi ayat untuk semak hafazan.</p>
+          <span class="btn-emoji">📖🎧</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="difficultyView" class="card hidden">
+      <h2 class="section-title" id="difficultyTitle">🧩 Pilih Tahap</h2>
+      <p class="section-subtitle">Pilih tahap kesukaran yang sesuai untuk si kecil.</p>
+      <div class="difficulty-grid">
+        <button class="small-btn easy" onclick="startQuiz('easy')">🌱 Senang</button>
+        <button class="small-btn medium" onclick="startQuiz('medium')">🌤️ Sederhana</button>
+        <button class="small-btn hard" onclick="startQuiz('hard')">🌋 Susah</button>
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn" onclick="goHome()">⬅️ Kembali ke Utama</button>
+      </div>
+    </section>
+
+    <section id="quizView" class="hidden">
+      <div class="quiz-wrap">
+        <div class="card">
+          <h2 class="section-title">🏆 Skor Dino</h2>
+          <p class="section-subtitle" id="quizSubtitle">Jawab dan kumpul bintang!</p>
+          <div class="stats">
+            <div class="stat-box">
+              <div class="num" id="scoreNum">0</div>
+              <div class="label">Betul</div>
+            </div>
+            <div class="stat-box">
+              <div class="num" id="wrongNum">0</div>
+              <div class="label">Cuba Lagi</div>
+            </div>
+            <div class="stat-box">
+              <div class="num" id="streakNum">0</div>
+              <div class="label">Streak</div>
+            </div>
+          </div>
+          <div class="note" id="levelHint"></div>
+          <div class="message" id="messageBox">Mari kita mula! 🦕</div>
+          <div class="nav-row">
+            <button class="nav-btn" onclick="openDifficulty(currentMode)">🔁 Tukar Tahap</button>
+            <button class="nav-btn" onclick="goHome()">🏠 Utama</button>
+          </div>
+        </div>
+
+        <div class="card question-box">
+          <div class="question-label">Soalan Dino</div>
+          <div class="question-text" id="questionText">3 + 2 = ?</div>
+          <div class="dino-cheer" id="questionDino">🦖</div>
+          <div class="answers-grid" id="answersGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="hafazanListView" class="card hidden">
+      <h2 class="section-title">📖 Senarai Surah Hafazan</h2>
+      <p class="section-subtitle">Pilih surah. Setiap ayat akan dipaparkan berasingan bersama butang audio.</p>
+      <div class="surah-grid" id="surahGrid"></div>
+      <div class="nav-row">
+        <button class="nav-btn" onclick="goHome()">⬅️ Kembali ke Utama</button>
+      </div>
+    </section>
+
+    <section id="surahView" class="card hidden">
+      <h2 class="section-title" id="surahTitle">📘 Surah</h2>
+      <p class="section-subtitle" id="surahSubtitle">Ayat demi ayat untuk semakan hafazan.</p>
+      <div class="audio-hint">🔊 Tekan butang audio di sebelah ayat untuk memainkan bacaan.</div>
+      <div id="surahContent" class="ayah-list"></div>
+      <div class="nav-row">
+        <button class="nav-btn" onclick="openHafazan()">📚 Pilih Surah Lain</button>
+        <button class="nav-btn" onclick="goHome()">🏠 Utama</button>
+      </div>
+      <div class="note">Nota: Bahagian hafazan memerlukan sambungan internet untuk memuatkan teks ayat dan audio.</div>
+    </section>
+
+    <div class="footer-note">Dibina sebagai aplikasi satu fail HTML dengan tema dinosaur ceria. 🦕✨</div>
+  </div>
+
+  <button id="soundToggle" class="sound-fab" type="button" aria-label="Tutup bunyi">
+    🔊 <span id="soundLabel">Bunyi ON</span>
+  </button>
+
+  <script>
+    const surahs = [
+      { number: 1, name: 'Al-Fatihah', verses: 7 },
+      { number: 114, name: 'An-Nas', verses: 6 },
+      { number: 112, name: 'Al-Ikhlas', verses: 4 },
+      { number: 113, name: 'Al-Falaq', verses: 5 },
+      { number: 111, name: 'Al-Masad', verses: 5 },
+      { number: 110, name: 'An-Nasr', verses: 3 },
+      { number: 109, name: 'Al-Kafirun', verses: 6 },
+      { number: 108, name: 'Al-Kauthar', verses: 3 },
+      { number: 107, name: 'Al-Ma’un', verses: 7 },
+      { number: 106, name: 'Al-Quraisy', verses: 4 },
+    ];
+
+    const views = {
+      home: document.getElementById('homeView'),
+      difficulty: document.getElementById('difficultyView'),
+      quiz: document.getElementById('quizView'),
+      hafazanList: document.getElementById('hafazanListView'),
+      surah: document.getElementById('surahView'),
+    };
+
+    const difficultyTitle = document.getElementById('difficultyTitle');
+    const questionText = document.getElementById('questionText');
+    const answersGrid = document.getElementById('answersGrid');
+    const messageBox = document.getElementById('messageBox');
+    const scoreNum = document.getElementById('scoreNum');
+    const wrongNum = document.getElementById('wrongNum');
+    const streakNum = document.getElementById('streakNum');
+    const quizSubtitle = document.getElementById('quizSubtitle');
+    const levelHint = document.getElementById('levelHint');
+    const questionDino = document.getElementById('questionDino');
+    const surahGrid = document.getElementById('surahGrid');
+    const surahTitle = document.getElementById('surahTitle');
+    const surahSubtitle = document.getElementById('surahSubtitle');
+    const surahContent = document.getElementById('surahContent');
+    const soundToggle = document.getElementById('soundToggle');
+
+    let currentMode = 'add';
+    let currentDifficulty = 'easy';
+    let currentQuestion = null;
+    let stats = { score: 0, wrong: 0, streak: 0 };
+    let player = null;
+    let activeAudioBtn = null;
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function showView(name) {
+      Object.values(views).forEach(view => view.classList.add('hidden'));
+      views[name].classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function setSoundState(on) {
+      soundEnabled = on;
+      soundToggle.classList.toggle('off', !on);
+      soundToggle.innerHTML = `${on ? '🔊' : '🔇'} <span>${on ? 'Bunyi ON' : 'Bunyi OFF'}</span>`;
+      soundToggle.setAttribute('aria-label', on ? 'Tutup bunyi' : 'Hidupkan bunyi');
+    }
+
+    function toggleSound(forceInit = true) {
+      if (forceInit) initAudio();
+      setSoundState(!soundEnabled);
+      if (soundEnabled) {
+        playUiSound();
+        playCuteDinoHello();
+        speakKidFriendly('Bunyi dihidupkan');
+      } else {
+        window.speechSynthesis?.cancel();
+      }
+    }
+
+    function envelope(gainNode, start, attack, decay, sustain) {
+      gainNode.gain.cancelScheduledValues(start);
+      gainNode.gain.setValueAtTime(0.0001, start);
+      gainNode.gain.exponentialRampToValueAtTime(Math.max(sustain, 0.0001), start + attack);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, start + attack + decay);
+    }
+
+    function playTone(freq = 440, duration = 0.18, type = 'sine', volume = 0.05, whenOffset = 0) {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime + whenOffset;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      envelope(gain, now, 0.01, duration, volume);
+      osc.start(now);
+      osc.stop(now + duration + 0.05);
+    }
+
+    function playUiSound() {
+      playTone(720, 0.05, 'triangle', 0.02, 0);
+      playTone(940, 0.06, 'triangle', 0.018, 0.05);
+    }
+
+    function playCorrectSound() {
+      playTone(523.25, 0.08, 'triangle', 0.04, 0);
+      playTone(659.25, 0.08, 'triangle', 0.04, 0.09);
+      playTone(783.99, 0.12, 'triangle', 0.045, 0.18);
+      playTone(1046.5, 0.18, 'triangle', 0.05, 0.32);
+    }
+
+    function playWrongSound() {
+      playTone(330, 0.10, 'sawtooth', 0.025, 0);
+      playTone(260, 0.12, 'sawtooth', 0.025, 0.1);
+    }
+
+    function playAyahTapSound() {
+      playTone(440, 0.05, 'sine', 0.02, 0);
+      playTone(660, 0.08, 'sine', 0.02, 0.06);
+    }
+
+    function playCuteDinoHello() {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1200, now);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(420, now);
+      osc.frequency.exponentialRampToValueAtTime(650, now + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(520, now + 0.24);
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(11, now);
+      lfoGain.gain.setValueAtTime(14, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+      osc.start(now);
+      lfo.start(now);
+      osc.stop(now + 0.32);
+      lfo.stop(now + 0.32);
+    }
+
+    function playCuteDinoHappy() {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1400, now);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(560, now + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(760, now + 0.22);
+      osc.frequency.exponentialRampToValueAtTime(520, now + 0.34);
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(18, now);
+      lfoGain.gain.setValueAtTime(18, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.055, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+      osc.start(now);
+      lfo.start(now);
+      osc.stop(now + 0.42);
+      lfo.stop(now + 0.42);
+      playTone(880, 0.06, 'sine', 0.012, 0.08);
+      playTone(1100, 0.08, 'sine', 0.01, 0.16);
+    }
+
+    function playCuteDinoOops() {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(900, now);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(420, now);
+      osc.frequency.exponentialRampToValueAtTime(260, now + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.24);
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(9, now);
+      lfoGain.gain.setValueAtTime(10, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.03, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+      osc.start(now);
+      lfo.start(now);
+      osc.stop(now + 0.3);
+      lfo.stop(now + 0.3);
+    }
+
+    function speakKidFriendly(text) {
+      if (!soundEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'ms-MY';
+      utter.pitch = 1.35;
+      utter.rate = 1.02;
+      utter.volume = 0.85;
+      const voices = window.speechSynthesis.getVoices?.() || [];
+      const preferred = voices.find(v => /ms|Malay/i.test(v.lang + ' ' + v.name)) || voices.find(v => /female|zira|siti|nur/i.test(v.name)) || voices[0];
+      if (preferred) utter.voice = preferred;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function stopSpeech() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function goHome() {
+      stopAudio();
+      stopSpeech();
+      showView('home');
+    }
+
+    function openDifficulty(mode) {
+      stopAudio();
+      stopSpeech();
+      currentMode = mode;
+      difficultyTitle.textContent = mode === 'add' ? '➕ Pilih Tahap Tambah' : '➖ Pilih Tahap Tolak';
+      showView('difficulty');
+    }
+
+    function startQuiz(level) {
+      currentDifficulty = level;
+      stats = { score: 0, wrong: 0, streak: 0 };
+      updateStats();
+      const modeLabel = currentMode === 'add' ? 'Tambah' : 'Tolak';
+      const levelLabel = level === 'easy' ? 'Senang' : level === 'medium' ? 'Sederhana' : 'Susah';
+      quizSubtitle.textContent = `${modeLabel} • Tahap ${levelLabel}`;
+      levelHint.textContent = getLevelHint(currentMode, level);
+      messageBox.textContent = 'Pilih jawapan yang betul ya! 🌟';
+      questionDino.textContent = currentMode === 'add' ? '🦕' : '🦖';
+      stopSpeech();
+      showView('quiz');
+      nextQuestion();
+    }
+
+    function getLevelHint(mode, level) {
+      const hints = {
+        add: {
+          easy: 'Senang: nombor kecil 0 hingga 10.',
+          medium: 'Sederhana: nombor hingga 50 dengan jumlah lebih besar.',
+          hard: 'Susah: nombor hingga 999 dan lebih mencabar.',
+        },
+        sub: {
+          easy: 'Senang: tolak nombor kecil tanpa jawapan negatif.',
+          medium: 'Sederhana: tolak nombor hingga 60.',
+          hard: 'Susah: tolak nombor hingga 999 dan lebih mencabar.',
+        }
+      };
+      return hints[mode][level];
+    }
+
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function uniqueOptions(correct, spread) {
+      const set = new Set([correct]);
+      while (set.size < 4) {
+        const offset = rand(-spread, spread);
+        const candidate = Math.max(0, correct + offset);
+        set.add(candidate);
+      }
+      return Array.from(set).sort(() => Math.random() - 0.5);
+    }
+
+    function buildQuestion() {
+      let a, b, answer, spread;
+
+      if (currentMode === 'add') {
+        if (currentDifficulty === 'easy') {
+          a = rand(0, 10); b = rand(0, 10); spread = 5;
+        } else if (currentDifficulty === 'medium') {
+          a = rand(5, 50); b = rand(5, 50); spread = 12;
+        } else {
+          a = rand(25, 999); b = rand(25, 999); spread = 35;
+        }
+        answer = a + b;
+        return { text: `${a} + ${b} = ?`, answer, options: uniqueOptions(answer, spread) };
+      }
+
+      if (currentDifficulty === 'easy') {
+        a = rand(1, 10); b = rand(0, a); spread = 5;
+      } else if (currentDifficulty === 'medium') {
+        a = rand(15, 60); b = rand(0, a); spread = 12;
+      } else {
+        a = rand(100, 999); b = rand(10, a); spread = 35;
+      }
+      answer = a - b;
+      return { text: `${a} − ${b} = ?`, answer, options: uniqueOptions(answer, spread) };
+    }
+
+    function nextQuestion() {
+      currentQuestion = buildQuestion();
+      questionText.textContent = currentQuestion.text;
+      renderAnswers();
+    }
+
+    function renderAnswers() {
+      answersGrid.innerHTML = '';
+      currentQuestion.options.forEach(value => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = value;
+        btn.onclick = () => checkAnswer(value, btn);
+        answersGrid.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(value, btn) {
+      const buttons = [...document.querySelectorAll('.answer-btn')];
+      buttons.forEach(b => b.disabled = true);
+      stopSpeech();
+
+      if (value === currentQuestion.answer) {
+        btn.classList.add('correct');
+        stats.score += 1;
+        stats.streak += 1;
+        const praise = ['Hebat!', 'Bagus sangat!', 'Pandainya!', 'Yeay, betul!'][rand(0, 3)];
+        messageBox.textContent = `${praise} 🌟`;
+        questionDino.textContent = ['🦕', '🦖', '🥳', '⭐'][rand(0, 3)];
+        playCorrectSound();
+        playCuteDinoHappy();
+        speakKidFriendly(praise);
+      } else {
+        btn.classList.add('wrong');
+        const correctBtn = buttons.find(b => Number(b.textContent) === currentQuestion.answer);
+        if (correctBtn) correctBtn.classList.add('correct');
+        stats.wrong += 1;
+        stats.streak = 0;
+        messageBox.textContent = `Cuba lagi ya! Jawapan betul ialah ${currentQuestion.answer}. 💛`;
+        questionDino.textContent = '🙂';
+        playWrongSound();
+        playCuteDinoOops();
+        speakKidFriendly('Cuba lagi ya');
+      }
+
+      updateStats();
+      setTimeout(() => {
+        questionDino.textContent = currentMode === 'add' ? '🦕' : '🦖';
+        nextQuestion();
+      }, 1200);
+    }
+
+    function updateStats() {
+      scoreNum.textContent = stats.score;
+      wrongNum.textContent = stats.wrong;
+      streakNum.textContent = stats.streak;
+    }
+
+    function openHafazan() {
+      stopAudio();
+      stopSpeech();
+      showView('hafazanList');
+    }
+
+    function renderSurahList() {
+      surahGrid.innerHTML = '';
+      surahs.forEach(surah => {
+        const card = document.createElement('div');
+        card.className = 'surah-card';
+        card.innerHTML = `
+          <span class="tag">Surah ${surah.number}</span>
+          <h3>${surah.name}</h3>
+          <div>${surah.verses} ayat</div>
+          <button class="small-btn" style="padding:12px 14px" onclick="loadSurah(${surah.number})">Buka Surah</button>
+        `;
+        surahGrid.appendChild(card);
+      });
+    }
+
+    async function loadSurah(number) {
+      stopAudio();
+      stopSpeech();
+      const selected = surahs.find(s => s.number === number);
+      if (!selected) return;
+      surahTitle.textContent = `📘 Surah ${selected.name}`;
+      surahSubtitle.textContent = `Memaparkan ${selected.verses} ayat secara berasingan.`;
+      surahContent.innerHTML = '<div class="loading">Memuatkan ayat... ⏳</div>';
+      showView('surah');
+
+      try {
+        const res = await fetch(`https://api.alquran.cloud/v1/surah/${number}/quran-uthmani`);
+        if (!res.ok) throw new Error('Gagal memuatkan data surah');
+        const data = await res.json();
+        const ayahs = data?.data?.ayahs || [];
+        if (!ayahs.length) throw new Error('Tiada ayat ditemui');
+        surahContent.innerHTML = '';
+        ayahs.forEach(ayah => {
+          const card = document.createElement('div');
+          card.className = 'ayah-card';
+          const globalAyah = ayah.number;
+          const audioUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${globalAyah}.mp3`;
+          card.innerHTML = `
+            <div class="ayah-badge">${ayah.numberInSurah}</div>
+            <div class="ayah-text">${ayah.text}</div>
+            <button class="icon-btn" title="Mainkan audio ayat ${ayah.numberInSurah}">▶️</button>
+          `;
+          const btn = card.querySelector('.icon-btn');
+          btn.addEventListener('click', () => playAyah(audioUrl, btn));
+          surahContent.appendChild(card);
+        });
+      } catch (error) {
+        surahContent.innerHTML = `
+          <div class="note" style="color:#7a1b1b; background:#fff4f4;">
+            Tidak dapat memuatkan surah sekarang. Sila semak sambungan internet dan cuba lagi.<br><br>
+            <strong>Ralat:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+
+    function playAyah(url, btn) {
+      stopSpeech();
+      if (player && player.src === url && !player.paused) {
+        stopAudio();
+        return;
+      }
+
+      playAyahTapSound();
+      stopAudio();
+      player = new Audio(url);
+      activeAudioBtn = btn;
+      activeAudioBtn.textContent = '⏸️';
+      player.play().catch(() => {
+        if (activeAudioBtn) activeAudioBtn.textContent = '▶️';
+        alert('Audio tidak dapat dimainkan sekarang. Sila cuba lagi.');
+      });
+      player.addEventListener('ended', stopAudio);
+      player.addEventListener('error', stopAudio);
+    }
+
+    function stopAudio() {
+      if (player) {
+        player.pause();
+        player.currentTime = 0;
+      }
+      if (activeAudioBtn) activeAudioBtn.textContent = '▶️';
+      player = null;
+      activeAudioBtn = null;
+    }
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('button') && !e.target.closest('#soundToggle') && !e.target.closest('.answer-btn')) {
+        playUiSound();
+      }
+    });
+
+    soundToggle.addEventListener('click', () => toggleSound(true));
+    window.addEventListener('pointerdown', initAudio, { once: true });
+
+    renderSurahList();
+    setSoundState(true);
+    showView('home');
+  </script>
+</body>
+</html>
