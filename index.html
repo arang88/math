@@ -1,782 +1,975 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dino Matematik</title>
-  <style>
-    :root {
-      --text: #24313a;
-      --muted: #5b707d;
-      --card: rgba(255, 255, 255, 0.93);
-      --shadow: 0 16px 40px rgba(31, 60, 42, 0.15);
-      --radius: 26px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🦖 Permainan Matematik Dinosaur - Darjah 1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap');
 
-    * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      margin: 0;
-      font-family: "Comic Sans MS", "Trebuchet MS", "Segoe UI", sans-serif;
-      color: var(--text);
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 10% 15%, rgba(255,255,255,0.9) 0 8%, transparent 8.1%),
-        radial-gradient(circle at 85% 12%, rgba(255,255,255,0.75) 0 7%, transparent 7.1%),
-        radial-gradient(circle at 30% 30%, rgba(255,230,120,0.18) 0 12%, transparent 12.1%),
-        linear-gradient(180deg, #9be9ff 0%, #d7fff5 34%, #f7fff5 100%);
-      overflow-x: hidden;
-    }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #87ceeb 0%, #a8e063 40%, #56ab2f 70%, #3c7a1e 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    font-family: 'Nunito', 'Comic Sans MS', sans-serif;
+    position: relative;
+    overflow-x: hidden;
+  }
 
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      inset: auto auto 0 0;
-      width: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
+  /* ===== Awan bergerak ===== */
+  .cloud {
+    position: fixed;
+    color: white;
+    font-size: 50px;
+    opacity: 0.6;
+    animation: floatCloud linear infinite;
+    z-index: 0;
+  }
+  .cloud:nth-child(1) { top: 5%; animation-duration: 25s; font-size: 60px; }
+  .cloud:nth-child(2) { top: 12%; animation-duration: 35s; animation-delay: -10s; }
+  .cloud:nth-child(3) { top: 20%; animation-duration: 30s; animation-delay: -5s; font-size: 40px; }
 
-    body::before {
-      height: 170px;
-      background:
-        radial-gradient(circle at 8% 100%, #86d37a 0 21%, transparent 21.2%),
-        radial-gradient(circle at 18% 100%, #73c468 0 18%, transparent 18.2%),
-        radial-gradient(circle at 32% 100%, #98dc8a 0 20%, transparent 20.2%),
-        radial-gradient(circle at 47% 100%, #7acc6f 0 22%, transparent 22.2%),
-        radial-gradient(circle at 63% 100%, #8fdc81 0 19%, transparent 19.2%),
-        radial-gradient(circle at 79% 100%, #74c56a 0 17%, transparent 17.2%),
-        radial-gradient(circle at 92% 100%, #8ee18b 0 20%, transparent 20.2%);
-      opacity: 0.9;
-    }
+  @keyframes floatCloud {
+    0%   { transform: translateX(110vw); }
+    100% { transform: translateX(-150px); }
+  }
 
-    body::after {
-      height: 85px;
-      background: linear-gradient(180deg, transparent 0%, rgba(119,200,112,0.15) 20%, rgba(119,200,112,0.45) 100%);
-    }
+  /* ===== Bekas Utama ===== */
+  .game-container {
+    background: linear-gradient(135deg, #fffde7 0%, #fff8e1 100%);
+    border: 8px solid #6b8e23;
+    border-radius: 30px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35), inset 0 0 30px rgba(255,255,255,0.3);
+    max-width: 520px;
+    width: 100%;
+    padding: 28px 25px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
 
-    .app {
-      position: relative;
-      z-index: 1;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 22px 18px 120px;
-    }
+  .game-container::before {
+    content: "🌴";
+    position: absolute;
+    font-size: 65px;
+    top: -12px;
+    left: -8px;
+    opacity: 0.45;
+    transform: rotate(-10deg);
+  }
+  .game-container::after {
+    content: "🌋";
+    position: absolute;
+    font-size: 65px;
+    bottom: -12px;
+    right: -8px;
+    opacity: 0.45;
+  }
 
-    .hero,
-    .card {
-      background: var(--card);
-      border-radius: 30px;
-      box-shadow: var(--shadow);
-      border: 3px solid rgba(255,255,255,0.85);
-      backdrop-filter: blur(6px);
-    }
+  .corner-deco-tr {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 45px;
+    opacity: 0.35;
+  }
+  .corner-deco-bl {
+    position: absolute;
+    bottom: -5px;
+    left: -5px;
+    font-size: 45px;
+    opacity: 0.35;
+  }
 
-    .hero {
-      padding: 22px;
-      text-align: center;
-      margin-bottom: 18px;
-    }
+  /* ===== Tajuk ===== */
+  h1 {
+    font-family: 'Fredoka One', 'Comic Sans MS', cursive;
+    color: #33691e;
+    font-size: 1.55em;
+    text-shadow: 2px 2px 0 #ffd54f, 4px 4px 0 rgba(0,0,0,0.08);
+    margin-bottom: 5px;
+    line-height: 1.2;
+  }
+  .subtitle {
+    font-size: 0.85em;
+    color: #8d6e63;
+    margin-bottom: 8px;
+  }
 
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 4vw, 3rem);
-      color: #16653f;
-    }
+  /* ====================================================
+     NAVBAR MENU UTAMA (di halaman utama)
+     ==================================================== */
+  .top-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 5;
+  }
 
-    .hero p {
-      margin: 0;
-      font-size: 1.05rem;
-      color: var(--muted);
-    }
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(145deg, #5c6bc0, #3949ab);
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 0.95em;
+    font-weight: bold;
+    font-family: inherit;
+    box-shadow: 0 4px 0 #1a237e, 0 6px 14px rgba(0,0,0,0.2);
+    transition: all 0.15s ease;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+  .nav-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 0 #1a237e, 0 10px 20px rgba(0,0,0,0.25);
+    background: linear-gradient(145deg, #7986cb, #5c6bc0);
+  }
+  .nav-link:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #1a237e;
+  }
+  .nav-link .nav-icon {
+    font-size: 1.2em;
+  }
 
-    .hero-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 16px;
-    }
+  /* Variasi warna untuk pelbagai link */
+  .nav-link.primary {
+    background: linear-gradient(145deg, #5c6bc0, #3949ab);
+    box-shadow: 0 4px 0 #1a237e, 0 6px 14px rgba(0,0,0,0.2);
+  }
+  .nav-link.primary:hover {
+    background: linear-gradient(145deg, #7986cb, #5c6bc0);
+    box-shadow: 0 7px 0 #1a237e, 0 10px 20px rgba(0,0,0,0.25);
+  }
+  .nav-link.primary:active {
+    box-shadow: 0 0 0 #1a237e;
+  }
 
-    .badge {
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 0.92rem;
-      background: white;
-      box-shadow: 0 8px 20px rgba(70,109,84,0.12);
-    }
+  /* ====================================================
+     HALAMAN UTAMA (HOME SCREEN)
+     ==================================================== */
+  .home-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+  }
+  .home-screen.hidden { display: none; }
 
-    .card {
-      padding: 18px;
-    }
+  .home-dino-row {
+    font-size: 70px;
+    animation: homeBounce 2s ease-in-out infinite;
+    filter: drop-shadow(3px 5px 4px rgba(0,0,0,0.2));
+    margin: 5px 0;
+  }
+  @keyframes homeBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%      { transform: translateY(-15px) scale(1.08); }
+  }
 
-    .hidden { display: none !important; }
+  .home-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8em;
+    color: #33691e;
+    text-shadow: 3px 3px 0 #ffd54f, 5px 5px 0 rgba(0,0,0,0.08);
+    line-height: 1.25;
+    margin: 5px 0;
+  }
+  .home-tagline {
+    font-size: 1em;
+    color: #6d4c41;
+    font-weight: bold;
+  }
 
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0 0 10px;
-      font-size: clamp(1.35rem, 3vw, 2rem);
-      color: #13553b;
-    }
+  .home-features {
+    background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+    border: 3px dashed #43a047;
+    border-radius: 18px;
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 0.95em;
+    color: #1b5e20;
+    width: 100%;
+    max-width: 380px;
+    line-height: 1.8;
+  }
+  .home-features div { margin: 2px 0; }
 
-    .section-subtitle {
-      margin: 0;
-      color: var(--muted);
-      font-size: 1rem;
-    }
+  .play-btn {
+    background: linear-gradient(145deg, #66bb6a, #2e7d32);
+    border: none;
+    padding: 18px 50px;
+    border-radius: 50px;
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    font-family: 'Fredoka One', cursive;
+    cursor: pointer;
+    box-shadow: 0 7px 0 #1b5e20, 0 10px 25px rgba(0,0,0,0.25);
+    transition: all 0.15s ease;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    animation: pulseBtn 2s ease-in-out infinite;
+  }
+  .play-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 0 #1b5e20, 0 14px 30px rgba(0,0,0,0.3);
+  }
+  .play-btn:active {
+    transform: translateY(7px);
+    box-shadow: 0 0 0 #1b5e20;
+  }
+  @keyframes pulseBtn {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
 
-    .menu-grid,
-    .difficulty-grid {
-      display: grid;
-      gap: 16px;
-      margin-top: 22px;
-    }
+  .home-footer {
+    font-size: 0.75em;
+    color: #8d6e63;
+    opacity: 0.7;
+    margin-top: 5px;
+  }
 
-    .menu-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-    .difficulty-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+  /* ===== Pemisah hiasan ===== */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 350px;
+    margin: 2px 0;
+    color: #a5d6a7;
+    font-size: 0.8em;
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #a5d6a7, transparent);
+  }
 
-    button {
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 900;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
+  /* ====================================================
+     BUTANG HALAMAN UTAMA (HOME BUTTON) - semasa game
+     ==================================================== */
+  .home-btn {
+    background: linear-gradient(145deg, #78909c, #546e7a);
+    border: none;
+    padding: 9px 18px;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #37474f, 0 6px 12px rgba(0,0,0,0.15);
+    transition: all 0.12s ease;
+    font-family: inherit;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 10;
+  }
+  .home-btn:hover {
+    background: linear-gradient(145deg, #90a4ae, #607d8b);
+    transform: translateY(-2px);
+  }
+  .home-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #37474f;
+  }
+  .home-btn.hidden { display: none; }
 
-    button:hover { transform: translateY(-2px) scale(1.01); }
-    button:active { transform: translateY(0) scale(0.98); }
+  /* ===== Kawasan Permainan ===== */
+  .game-screen { display: none; }
+  .game-screen.show { display: block; }
 
-    .big-btn {
-      width: 100%;
-      min-height: 180px;
-      border-radius: 30px;
-      padding: 18px;
-      color: white;
-      box-shadow: var(--shadow);
-      text-align: left;
-      position: relative;
-      overflow: hidden;
-    }
+  /* ===== Dinosaur utama ===== */
+  .dino-stage {
+    position: relative;
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .dino {
+    font-size: 85px;
+    animation: dinoWalk 1.2s infinite ease-in-out;
+    filter: drop-shadow(3px 5px 3px rgba(0,0,0,0.2));
+    cursor: default;
+    user-select: none;
+  }
+  .dino.celebrate { animation: dinoCelebrate 0.5s ease; }
+  .dino.shake     { animation: dinoShake 0.5s ease; }
 
-    .big-btn h2 { margin: 0 0 10px; font-size: 1.6rem; }
-    .big-btn p { margin: 0; font-size: 1rem; opacity: 0.95; }
-    .big-btn .btn-emoji { font-size: 3.2rem; position: absolute; right: 14px; bottom: 10px; }
-    .big-btn.add { background: linear-gradient(135deg, #2ec27e, #51d4ff); }
-    .big-btn.sub { background: linear-gradient(135deg, #ff8f70, #ffbf69); }
-    .big-btn.link { background: linear-gradient(135deg, #7b61ff, #ff6b9d); }
+  @keyframes dinoWalk {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-12px) rotate(-3deg); }
+    75% { transform: translateY(-8px) rotate(3deg); }
+  }
+  @keyframes dinoCelebrate {
+    0%   { transform: scale(1) rotate(0); }
+    25%  { transform: scale(1.3) rotate(-10deg); }
+    50%  { transform: scale(1.3) rotate(10deg); }
+    75%  { transform: scale(1.2) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  @keyframes dinoShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-15px); }
+    40% { transform: translateX(15px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
+  }
 
-    .small-btn {
-      width: 100%;
-      padding: 16px 18px;
-      border-radius: 22px;
-      background: white;
-      font-size: 1.08rem;
-      color: var(--text);
-      box-shadow: 0 12px 24px rgba(48,82,69,0.10);
-    }
+  .footprints {
+    font-size: 16px;
+    letter-spacing: 8px;
+    opacity: 0.3;
+    margin-top: -5px;
+  }
 
-    .small-btn.easy { border: 3px solid #7ed957; }
-    .small-btn.medium { border: 3px solid #ffb703; }
-    .small-btn.hard { border: 3px solid #ff6b6b; }
+  /* ===== Pilihan Mod ===== */
+  .level-select {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .level-btn {
+    background: linear-gradient(145deg, #4fc3f7, #039be5);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 14px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.95em;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #01579b, 0 6px 15px rgba(0,0,0,0.15);
+    transition: all 0.15s ease;
+    font-family: inherit;
+  }
+  .level-btn:hover { transform: translateY(-2px); }
+  .level-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #01579b; }
+  .level-btn.active {
+    background: linear-gradient(145deg, #ffca28, #ff8f00);
+    box-shadow: 0 4px 0 #e65100, 0 6px 15px rgba(0,0,0,0.15);
+  }
 
-    .nav-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 18px;
-    }
+  /* ===== Papan Skor ===== */
+  .scoreboard {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(135deg, #ffe0b2, #ffcc80);
+    border-radius: 16px;
+    padding: 10px 8px;
+    margin: 12px 0;
+    font-weight: bold;
+    color: #4e342e;
+    border: 3px dashed #ff9800;
+    font-size: 0.95em;
+  }
+  .scoreboard .stars { color: #ff6f00; }
 
-    .nav-btn {
-      background: white;
-      padding: 12px 16px;
-      border-radius: 18px;
-      box-shadow: 0 8px 18px rgba(38,54,66,0.1);
-      color: var(--text);
-    }
+  /* ===== Kotak Soalan ===== */
+  .question-box {
+    background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+    border: 4px solid #43a047;
+    border-radius: 22px;
+    padding: 22px 15px;
+    margin: 14px 0;
+    font-size: 2em;
+    color: #1b5e20;
+    font-weight: bold;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.3;
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.08);
+  }
+  .question-box .dino-row {
+    font-size: 0.45em;
+    line-height: 1.6;
+    word-break: break-all;
+  }
 
-    .quiz-wrap {
-      display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      gap: 18px;
-      margin-top: 22px;
-    }
+  /* ===== Pilihan Jawapan ===== */
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .option-btn {
+    background: linear-gradient(145deg, #ff8a65, #f4511e);
+    border: none;
+    border-radius: 16px;
+    padding: 16px 10px;
+    font-size: 1.6em;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #bf360c, 0 8px 18px rgba(0,0,0,0.15);
+    transition: all 0.1s ease;
+    font-family: inherit;
+    font-weight: bold;
+  }
+  .option-btn:hover {
+    background: linear-gradient(145deg, #ff7043, #e64a19);
+    transform: translateY(-2px);
+  }
+  .option-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 0 0 #bf360c;
+  }
+  .option-btn.correct {
+    background: linear-gradient(145deg, #66bb6a, #2e7d32) !important;
+    box-shadow: 0 6px 0 #1b5e20 !important;
+    animation: popCorrect 0.4s ease;
+  }
+  .option-btn.wrong {
+    background: linear-gradient(145deg, #ef5350, #c62828) !important;
+    box-shadow: 0 6px 0 #b71c1c !important;
+  }
+  @keyframes popCorrect {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-    }
+  /* ===== Maklum Balas ===== */
+  .feedback {
+    margin-top: 14px;
+    font-size: 1.25em;
+    font-weight: bold;
+    min-height: 35px;
+    color: #ff6f00;
+    transition: all 0.3s;
+  }
+  .feedback.correct-fb { color: #2e7d32; }
+  .feedback.wrong-fb   { color: #c62828; }
 
-    .stat-box {
-      background: white;
-      border-radius: 20px;
-      padding: 14px;
-      text-align: center;
-      box-shadow: 0 10px 20px rgba(44,73,56,0.09);
-    }
+  /* ===== Butang Bawah ===== */
+  .btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
 
-    .stat-box .num {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: #0f7b4b;
-    }
+  .restart-btn {
+    background: linear-gradient(145deg, #8d6e63, #5d4037);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 14px;
+    font-size: 1.05em;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #3e2723, 0 7px 14px rgba(0,0,0,0.2);
+    transition: all 0.1s ease;
+    font-family: inherit;
+    font-weight: bold;
+  }
+  .restart-btn:hover { transform: translateY(-2px); }
+  .restart-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #3e2723; }
 
-    .stat-box .label {
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
+  .home-btn-bottom {
+    background: linear-gradient(145deg, #78909c, #546e7a);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 14px;
+    font-size: 1.05em;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #37474f, 0 7px 14px rgba(0,0,0,0.2);
+    transition: all 0.1s ease;
+    font-family: inherit;
+    font-weight: bold;
+  }
+  .home-btn-bottom:hover { transform: translateY(-2px); }
+  .home-btn-bottom:active { transform: translateY(5px); box-shadow: 0 0 0 #37474f; }
 
-    .question-box {
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      gap: 14px;
-      padding: 24px;
-      background: linear-gradient(180deg, #fffef8, #f6fff9);
-      border-radius: 26px;
-      box-shadow: var(--shadow);
-    }
+  /* ===== Skrin Tamat ===== */
+  .end-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 0;
+  }
+  .end-screen.show { display: flex; }
+  .end-dino { font-size: 80px; animation: dinoCelebrate 1s infinite; }
+  .end-msg {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4em;
+    color: #33691e;
+  }
+  .end-score {
+    font-size: 1.8em;
+    color: #e65100;
+    font-weight: bold;
+  }
+  .end-stars { font-size: 2em; }
 
-    .question-label {
-      font-size: 1.08rem;
-      font-weight: 700;
-      color: var(--muted);
-    }
+  footer {
+    margin-top: 16px;
+    font-size: 0.78em;
+    color: #6d4c41;
+    opacity: 0.8;
+  }
 
-    .question-text {
-      font-size: clamp(2.7rem, 8vw, 4.6rem);
-      font-weight: 900;
-      color: #1a5d3d;
-      line-height: 1.1;
-    }
+  /* ===== Modal Pengesahan ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-overlay.show { display: flex; }
 
-    .dino-cheer {
-      font-size: 3.2rem;
-      animation: bob 2.2s ease-in-out infinite;
-    }
+  .modal-box {
+    background: linear-gradient(135deg, #fffde7, #fff8e1);
+    border: 6px solid #ff9800;
+    border-radius: 24px;
+    padding: 30px 25px;
+    max-width: 360px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    animation: modalPop 0.3s ease;
+  }
+  @keyframes modalPop {
+    0%   { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .modal-box .modal-icon { font-size: 50px; margin-bottom: 8px; }
+  .modal-box .modal-text {
+    font-size: 1.1em;
+    color: #4e342e;
+    font-weight: bold;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .modal-btns {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  .modal-yes {
+    background: linear-gradient(145deg, #ef5350, #c62828);
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 12px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #b71c1c;
+    transition: all 0.1s;
+    font-family: inherit;
+  }
+  .modal-yes:active { transform: translateY(4px); box-shadow: 0 0 0 #b71c1c; }
+  .modal-no {
+    background: linear-gradient(145deg, #66bb6a, #2e7d32);
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 12px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #1b5e20;
+    transition: all 0.1s;
+    font-family: inherit;
+  }
+  .modal-no:active { transform: translateY(4px); box-shadow: 0 0 0 #1b5e20; }
 
-    .answers-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-      width: 100%;
-      max-width: 420px;
-      margin-top: 8px;
-    }
-
-    .answer-btn {
-      padding: 22px 16px;
-      border-radius: 24px;
-      background: white;
-      color: var(--text);
-      font-size: clamp(1.55rem, 4vw, 2rem);
-      box-shadow: 0 12px 20px rgba(37,62,49,0.09);
-      min-height: 82px;
-    }
-
-    .answer-btn.correct {
-      background: linear-gradient(135deg, #2ec27e, #94f7b4);
-      color: #08351d;
-    }
-
-    .answer-btn.wrong {
-      background: linear-gradient(135deg, #ff8383, #ffd3d3);
-      color: #611919;
-    }
-
-    .message {
-      min-height: 60px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      font-size: 1.08rem;
-      font-weight: 800;
-      color: #13553b;
-    }
-
-    .note {
-      margin-top: 18px;
-      padding: 14px 16px;
-      background: rgba(255,255,255,0.82);
-      border-radius: 18px;
-      color: var(--muted);
-      font-size: 0.96rem;
-      box-shadow: 0 8px 18px rgba(38,54,66,0.08);
-    }
-
-    .sound-fab {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 50;
-      padding: 14px 16px;
-      border-radius: 999px;
-      color: white;
-      background: linear-gradient(135deg, #ff6b9d, #7b61ff);
-      box-shadow: 0 16px 28px rgba(88,73,186,0.28);
-      font-size: 1rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .sound-fab.off {
-      background: linear-gradient(135deg, #98a4ad, #6b7880);
-    }
-
-    @keyframes bob {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-10px) rotate(-2deg); }
-    }
-
-    @media (max-width: 860px) {
-      .hero, .quiz-wrap { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 560px) {
-      .app { padding: 14px 12px 110px; }
-      .hero { padding: 16px; border-radius: 24px; }
-      .card { padding: 14px; border-radius: 22px; }
-      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .stat-box { padding: 10px; }
-      .small-btn, .nav-btn { font-size: 0.98rem; }
-      .sound-fab { right: 12px; bottom: 12px; padding: 12px 14px; }
-      .answer-btn { min-height: 76px; font-size: 1.4rem; }
-    }
-  </style>
+  /* ===== Responsif ===== */
+  @media (max-width: 400px) {
+    h1, .home-title { font-size: 1.2em; }
+    .question-box { font-size: 1.5em; padding: 16px 10px; }
+    .option-btn { font-size: 1.3em; padding: 12px 8px; }
+    .dino, .home-dino-row { font-size: 65px; }
+    .play-btn { font-size: 1.2em; padding: 14px 36px; }
+    .nav-link { padding: 8px 14px; font-size: 0.85em; }
+  }
+</style>
 </head>
 <body>
-  <div class="app">
-    <section class="hero">
-      <div>
-        <h1>Dino Matematik</h1>
-        <p>Aplikasi ceria untuk kanak-kanak belajar operasi tambah dan operasi tolak.</p>
-        <div class="hero-badges">
-		<button class="nav-btn" onclick="window.location.href='https://www.planetkids.my/'">🔢 Halaman Utama (Subjek Lain)</button>
-          
-        </div>
-      </div>
-    </section>
 
-   <section id="homeView" class="card">
-  <h2 class="section-title">✨ Pilih Pengembaraan Matematik</h2>
-  <p class="section-subtitle">Tekan salah satu butang di bawah untuk mula bermain dan belajar.</p>
-  <div class="menu-grid">
-    <button class="big-btn add" onclick="openDifficulty('add')">
-      <h2>Operasi Tambah</h2>
-      <p>Belajar menambah nombor dengan suasana yang ceria.</p>
-      <span class="btn-emoji">➕</span>
+<!-- Awan hiasan -->
+<div class="cloud">☁️</div>
+<div class="cloud">☁️</div>
+<div class="cloud">☁️</div>
+
+<!-- ======== MODAL PENGESAHAN ======== -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-icon">🦕❓</div>
+    <div class="modal-text">
+      Kamu pasti mahu kembali<br>ke Halaman Utama?<br>
+      <span style="font-size:0.8em; color:#e65100;">Permainan semasa akan hilang!</span>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmGoHome()">🏠 Ya</button>
+      <button class="modal-no" onclick="closeModal()">🎮 Tidak</button>
+    </div>
+  </div>
+</div>
+
+<div class="game-container">
+  <span class="corner-deco-tr">🥚</span>
+  <span class="corner-deco-bl">🦴</span>
+
+  <!-- ===== Butang Home (sudut atas kiri) - semasa game ===== -->
+  <button class="home-btn hidden" id="homeBtn" onclick="goHomeSafe()">🏠 Utama</button>
+
+  <!-- ====================================================
+       HALAMAN UTAMA (HOME SCREEN)
+       ==================================================== -->
+  <div class="home-screen" id="homeScreen">
+
+    <!-- ============================================
+         MENU UTAMA — TUKAR LINK DI SINI
+         ============================================ -->
+    <div class="top-nav">
+      <!--
+        ╔══════════════════════════════════════════╗
+        ║  TUKAR href="..." KEPADA URL WEBSITE     ║
+        ║  UTAMA ANDA DI BAWAH INI:                ║
+        ╚══════════════════════════════════════════╝
+      -->
+      <a href="https://www.yourwebsite.com"
+         class="nav-link primary"
+         target="_blank"
+         rel="noopener noreferrer">
+        <span class="nav-icon">🌐</span> Menu Utama
+      </a>
+    </div>
+
+    <div class="home-dino-row">🦕🦖🦕</div>
+
+    <div class="home-title">
+      🌋 PENGEMBARAAN<br>MATEMATIK DINOSAUR 🌴
+    </div>
+
+    <p class="home-tagline">✏️ Silibus KSSR Matematik Tahun 1</p>
+
+    <div class="divider">🦖 🦕 🦖</div>
+
+    <div class="home-features">
+      <div>🔢 <strong>Mengira</strong> — Kira bilangan dinosaur</div>
+      <div>➕ <strong>Tambah</strong> — Penambahan nombor 1–20</div>
+      <div>➖ <strong>Tolak</strong> — Penolakan nombor 1–20</div>
+      <div>🎲 <strong>Campuran</strong> — Gabungan semua mod</div>
+      <div style="margin-top:8px;">💚 3 nyawa | ❓ 10 soalan | ⭐ Gred bintang</div>
+    </div>
+
+    <button class="play-btn" onclick="enterGame()">
+      🎮 MULA BERMAIN!
     </button>
 
-    <button class="big-btn sub" onclick="openDifficulty('sub')">
-      <h2>Operasi Tolak</h2>
-      <p>Asah kemahiran menolak dengan latihan menyeronokkan.</p>
-      <span class="btn-emoji">➖</span>
-    </button>
-  </div>
-</section>
-
-    <section id="difficultyView" class="card hidden">
-      <h2 class="section-title" id="difficultyTitle">🧩 Pilih Tahap</h2>
-      <p class="section-subtitle">Pilih tahap kesukaran yang sesuai untuk si kecil.</p>
-      <div class="difficulty-grid">
-        <button class="small-btn easy" onclick="startQuiz('easy')">🌱 Senang</button>
-        <button class="small-btn medium" onclick="startQuiz('medium')">🌤️ Sederhana</button>
-        <button class="small-btn hard" onclick="startQuiz('hard')">🌋 Susah</button>
-      </div>
-      <div class="nav-row">
-        <button class="nav-btn" onclick="goHome()">⬅️ Kembali ke Utama</button>
-      </div>
-    </section>
-
-    <section id="quizView" class="hidden">
-      <div class="quiz-wrap">
-        <div class="card">
-          <h2 class="section-title">🏆 Skor</h2>
-          <p class="section-subtitle" id="quizSubtitle">Jawab dan kumpul bintang!</p>
-          <div class="stats">
-            <div class="stat-box">
-              <div class="num" id="scoreNum">0</div>
-              <div class="label">Betul</div>
-            </div>
-            <div class="stat-box">
-              <div class="num" id="wrongNum">0</div>
-              <div class="label">Cuba Lagi</div>
-            </div>
-            <div class="stat-box">
-              <div class="num" id="streakNum">0</div>
-              <div class="label">Streak</div>
-            </div>
-          </div>
-          <div class="note" id="levelHint"></div>
-          <div class="message" id="messageBox">Mari kita mula! ✨</div>
-          <div class="nav-row">
-            <button class="nav-btn" onclick="openDifficulty(currentMode)">🔁 Tukar Tahap</button>
-            <button class="nav-btn" onclick="goHome()">🏠 Utama</button>
-          </div>
-        </div>
-
-        <div class="question-box">
-          <div class="question-label">Soalan</div>
-          <div class="question-text" id="questionText">3 + 2 = ?</div>
-          <div class="dino-cheer" id="questionDino">⭐</div>
-          <div class="answers-grid" id="answersGrid"></div>
-        </div>
-      </div>
-    </section>
+    <p class="home-footer">🌿 Sesuai untuk murid Darjah 1 Malaysia 🌿</p>
   </div>
 
-  <button id="soundToggle" class="sound-fab" type="button" aria-label="Tutup bunyi">
-    🔊 <span id="soundLabel">Bunyi ON</span>
-  </button>
+  <!-- ====================================================
+       SKRIN PERMAINAN (GAME SCREEN)
+       ==================================================== -->
+  <div class="game-screen" id="gameScreen">
 
-  <script>
-    const views = {
-      home: document.getElementById('homeView'),
-      difficulty: document.getElementById('difficultyView'),
-      quiz: document.getElementById('quizView'),
-    };
+    <h1>🦕 MATEMATIK DINOSAUR 🦖</h1>
+    <p class="subtitle">Darjah 1 — KSSR Malaysia</p>
 
-    const difficultyTitle = document.getElementById('difficultyTitle');
-    const questionText = document.getElementById('questionText');
-    const answersGrid = document.getElementById('answersGrid');
-    const messageBox = document.getElementById('messageBox');
-    const scoreNum = document.getElementById('scoreNum');
-    const wrongNum = document.getElementById('wrongNum');
-    const streakNum = document.getElementById('streakNum');
-    const quizSubtitle = document.getElementById('quizSubtitle');
-    const levelHint = document.getElementById('levelHint');
-    const questionDino = document.getElementById('questionDino');
-    const soundToggle = document.getElementById('soundToggle');
+    <div class="dino-stage">
+      <div class="dino" id="dinoEmoji">🦖</div>
+    </div>
+    <div class="footprints">🐾🐾🐾🐾🐾</div>
 
-    let currentMode = 'add';
-    let currentDifficulty = 'easy';
-    let currentQuestion = null;
-    let stats = { score: 0, wrong: 0, streak: 0 };
-    let audioCtx = null;
-    let soundEnabled = true;
+    <!-- Pilih mod -->
+    <div class="level-select" id="levelSelect">
+      <button class="level-btn active" onclick="setLevel('kira', this)">🔢 Mengira</button>
+      <button class="level-btn" onclick="setLevel('tambah', this)">➕ Tambah</button>
+      <button class="level-btn" onclick="setLevel('tolak', this)">➖ Tolak</button>
+      <button class="level-btn" onclick="setLevel('campur', this)">🎲 Campuran</button>
+    </div>
 
-    function showView(name) {
-      Object.values(views).forEach(view => view.classList.add('hidden'));
-      views[name].classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    <!-- Papan skor -->
+    <div class="scoreboard">
+      <span>⭐ Skor: <span class="stars" id="score">0</span></span>
+      <span>❓ Soalan: <span id="qNum">0</span>/10</span>
+      <span id="livesDisplay">💚💚💚</span>
+    </div>
+
+    <!-- Kawasan permainan -->
+    <div id="gameArea">
+      <div class="question-box" id="questionBox">
+        <span>Tekan <strong>"Mula"</strong> untuk bermain! 🦕</span>
+      </div>
+      <div class="options" id="optionsBox"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <!-- Skrin tamat -->
+    <div class="end-screen" id="endScreen">
+      <div class="end-dino">🦕</div>
+      <div class="end-msg" id="endMsg">Tahniah!</div>
+      <div class="end-score" id="endScore">0/10</div>
+      <div class="end-stars" id="endStars"></div>
+    </div>
+
+    <!-- Butang bawah -->
+    <div class="btn-group">
+      <button class="restart-btn" onclick="startGame()">🔁 Mula Semula</button>
+      <button class="home-btn-bottom" onclick="goHomeSafe()">🏠 Halaman Utama</button>
+    </div>
+
+    <footer>🌿 Nombor Bulat 1–20 (KSSR) 🌿</footer>
+  </div>
+
+</div>
+
+<!-- ======================== JAVASCRIPT ======================== -->
+<script>
+  // ---- Pemboleh ubah utama ----
+  let level = 'kira';
+  let score = 0;
+  let qCount = 0;
+  let lives = 3;
+  const totalQ = 10;
+  let currentAnswer = 0;
+  let isAnswered = false;
+  let gameInProgress = false;
+
+  const dinoEmojis  = ['🦖','🦕','🐊','🦎','🐢'];
+  const dinoSmall   = ['🦖','🦕'];
+  const correctMsgs = ['Betul! Hebat! 🌟','Pandainya! 🎉','Bagus sekali! 💪','Tahniah! ⭐','Bijak! 🧠','Cemerlang! 🏆'];
+  const wrongMsgs   = ['Cuba lagi! 💪','Jangan putus asa! 🌈','Hampir betul! 🤔'];
+
+  // ===== NAVIGASI HALAMAN =====
+  function showScreen(screen) {
+    document.getElementById('homeScreen').classList.toggle('hidden', screen !== 'home');
+    document.getElementById('gameScreen').classList.toggle('show', screen === 'game');
+    document.getElementById('homeBtn').classList.toggle('hidden', screen !== 'game');
+  }
+
+  function enterGame() {
+    showScreen('game');
+    startGame();
+  }
+
+  function goHomeSafe() {
+    if (gameInProgress && qCount > 0 && qCount <= totalQ && lives > 0) {
+      document.getElementById('confirmModal').classList.add('show');
+    } else {
+      confirmGoHome();
+    }
+  }
+  function confirmGoHome() {
+    closeModal();
+    gameInProgress = false;
+    showScreen('home');
+  }
+  function closeModal() {
+    document.getElementById('confirmModal').classList.remove('show');
+  }
+
+  // ---- Tetapkan Mod ----
+  function setLevel(lv, btn) {
+    level = lv;
+    document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    startGame();
+  }
+
+  // ---- Mula Permainan ----
+  function startGame() {
+    score = 0;
+    qCount = 0;
+    lives = 3;
+    isAnswered = false;
+    gameInProgress = true;
+    updateScore();
+    updateLives();
+    document.getElementById('endScreen').classList.remove('show');
+    document.getElementById('gameArea').style.display = '';
+    document.getElementById('feedback').innerText = '';
+    document.getElementById('feedback').className = 'feedback';
+    nextQuestion();
+  }
+
+  // ---- Fungsi Rawak ----
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  function pick(arr) {
+    return arr[randInt(0, arr.length - 1)];
+  }
+
+  // ---- Kemas kini UI ----
+  function updateScore() {
+    document.getElementById('score').innerText = score;
+    document.getElementById('qNum').innerText = qCount;
+  }
+  function updateLives() {
+    const h = '💚'.repeat(lives) + '🖤'.repeat(3 - lives);
+    document.getElementById('livesDisplay').innerText = h;
+  }
+
+  // ---- Soalan seterusnya ----
+  function nextQuestion() {
+    if (qCount >= totalQ || lives <= 0) {
+      gameInProgress = false;
+      showEndScreen();
+      return;
     }
 
-    function initAudio() {
-      if (!audioCtx) {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (AC) audioCtx = new AC();
+    qCount++;
+    isAnswered = false;
+    updateScore();
+    document.getElementById('feedback').innerText = '';
+    document.getElementById('feedback').className = 'feedback';
+
+    const dinoEl = document.getElementById('dinoEmoji');
+    dinoEl.innerText = pick(dinoEmojis);
+    dinoEl.className = 'dino';
+
+    let mode = level;
+    if (level === 'campur') mode = pick(['kira','tambah','tolak']);
+
+    let questionHTML = '';
+    let a, b;
+
+    if (mode === 'kira') {
+      a = randInt(1, 15);
+      const dinoChar = pick(dinoSmall);
+      let row = '';
+      for (let i = 0; i < a; i++) {
+        row += dinoChar;
+        if ((i + 1) % 5 === 0) row += '  ';
       }
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      questionHTML = `Berapa ekor dinosaur? 🔍<br><span class="dino-row">${row}</span>`;
+      currentAnswer = a;
+    } else if (mode === 'tambah') {
+      a = randInt(1, 10);
+      b = randInt(1, 10);
+      questionHTML = `🦕 ${a} + ${b} = ❓`;
+      currentAnswer = a + b;
+    } else if (mode === 'tolak') {
+      a = randInt(5, 18);
+      b = randInt(1, a);
+      questionHTML = `🦖 ${a} − ${b} = ❓`;
+      currentAnswer = a - b;
     }
 
-    function setSoundState(on) {
-      soundEnabled = on;
-      soundToggle.classList.toggle('off', !on);
-      soundToggle.innerHTML = `${on ? '🔊' : '🔇'} <span>${on ? 'Bunyi ON' : 'Bunyi OFF'}</span>`;
-      soundToggle.setAttribute('aria-label', on ? 'Tutup bunyi' : 'Hidupkan bunyi');
+    document.getElementById('questionBox').innerHTML = questionHTML;
+    generateOptions(currentAnswer);
+  }
+
+  // ---- Pilihan jawapan ----
+  function generateOptions(correct) {
+    let options = new Set([correct]);
+    let guard = 0;
+    while (options.size < 4 && guard < 100) {
+      let offset = randInt(-5, 5);
+      if (offset === 0) offset = randInt(1, 3);
+      let fake = correct + offset;
+      if (fake >= 0 && fake <= 25 && fake !== correct) options.add(fake);
+      guard++;
+    }
+    let fill = 1;
+    while (options.size < 4) {
+      if (!options.has(correct + fill)) options.add(correct + fill);
+      fill++;
     }
 
-    function toggleSound(forceInit = true) {
-      if (forceInit) initAudio();
-      setSoundState(!soundEnabled);
-      if (soundEnabled) {
-        playUiSound();
-        playCuteDinoHello();
-      }
-    }
+    let arr = Array.from(options).sort(() => Math.random() - 0.5);
 
-    function envelope(gainNode, start, attack, decay, sustain) {
-      gainNode.gain.cancelScheduledValues(start);
-      gainNode.gain.setValueAtTime(0.0001, start);
-      gainNode.gain.exponentialRampToValueAtTime(Math.max(sustain, 0.0001), start + attack);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, start + attack + decay);
-    }
+    const box = document.getElementById('optionsBox');
+    box.innerHTML = '';
+    arr.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(opt, btn, correct);
+      box.appendChild(btn);
+    });
+  }
 
-    function playTone(freq = 440, duration = 0.18, type = 'sine', volume = 0.05, whenOffset = 0) {
-      if (!soundEnabled) return;
-      initAudio();
-      if (!audioCtx) return;
-      const now = audioCtx.currentTime + whenOffset;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, now);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      envelope(gain, now, 0.01, duration, volume);
-      osc.start(now);
-      osc.stop(now + duration + 0.05);
-    }
+  // ---- Semak jawapan ----
+  function checkAnswer(selected, btn, correct) {
+    if (isAnswered) return;
+    isAnswered = true;
 
-    function playUiSound() {
-      playTone(720, 0.05, 'triangle', 0.02, 0);
-      playTone(940, 0.06, 'triangle', 0.018, 0.05);
-    }
+    const allBtns = document.querySelectorAll('.option-btn');
+    allBtns.forEach(b => b.style.pointerEvents = 'none');
 
-    function playCorrectSound() {
-      playTone(523.25, 0.08, 'triangle', 0.04, 0);
-      playTone(659.25, 0.08, 'triangle', 0.04, 0.09);
-      playTone(783.99, 0.12, 'triangle', 0.045, 0.18);
-      playTone(1046.5, 0.18, 'triangle', 0.05, 0.32);
-    }
+    const fb = document.getElementById('feedback');
+    const dinoEl = document.getElementById('dinoEmoji');
 
-    function playWrongSound() {
-      playTone(330, 0.10, 'sawtooth', 0.025, 0);
-      playTone(260, 0.12, 'sawtooth', 0.025, 0.1);
-    }
-
-    function playCuteDinoHello() {
-      if (!soundEnabled) return;
-      initAudio();
-      if (!audioCtx) return;
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1200, now);
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(420, now);
-      osc.frequency.exponentialRampToValueAtTime(650, now + 0.12);
-      osc.frequency.exponentialRampToValueAtTime(520, now + 0.24);
-      const lfo = audioCtx.createOscillator();
-      const lfoGain = audioCtx.createGain();
-      lfo.type = 'sine';
-      lfo.frequency.setValueAtTime(11, now);
-      lfoGain.gain.setValueAtTime(14, now);
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(audioCtx.destination);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
-      osc.start(now);
-      lfo.start(now);
-      osc.stop(now + 0.32);
-      lfo.stop(now + 0.32);
-    }
-
-    function playCuteDinoHappy() {
-      if (!soundEnabled) return;
-      initAudio();
-      if (!audioCtx) return;
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1400, now);
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(300, now);
-      osc.frequency.exponentialRampToValueAtTime(560, now + 0.12);
-      osc.frequency.exponentialRampToValueAtTime(760, now + 0.22);
-      osc.frequency.exponentialRampToValueAtTime(520, now + 0.34);
-      const lfo = audioCtx.createOscillator();
-      const lfoGain = audioCtx.createGain();
-      lfo.type = 'sine';
-      lfo.frequency.setValueAtTime(18, now);
-      lfoGain.gain.setValueAtTime(18, now);
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(audioCtx.destination);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.055, now + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
-      osc.start(now);
-      lfo.start(now);
-      osc.stop(now + 0.42);
-      lfo.stop(now + 0.42);
-      playTone(880, 0.06, 'sine', 0.012, 0.08);
-      playTone(1100, 0.08, 'sine', 0.01, 0.16);
-    }
-
-    function playCuteDinoOops() {
-      if (!soundEnabled) return;
-      initAudio();
-      if (!audioCtx) return;
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(900, now);
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(420, now);
-      osc.frequency.exponentialRampToValueAtTime(260, now + 0.12);
-      osc.frequency.exponentialRampToValueAtTime(180, now + 0.24);
-      const lfo = audioCtx.createOscillator();
-      const lfoGain = audioCtx.createGain();
-      lfo.type = 'sine';
-      lfo.frequency.setValueAtTime(9, now);
-      lfoGain.gain.setValueAtTime(10, now);
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(audioCtx.destination);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.03, now + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
-      osc.start(now);
-      lfo.start(now);
-      osc.stop(now + 0.3);
-      lfo.stop(now + 0.3);
-    }
-
-    function goHome() {
-      showView('home');
-    }
-
-    function openDifficulty(mode) {
-      currentMode = mode;
-      difficultyTitle.textContent = mode === 'add' ? '➕ Pilih Tahap Tambah' : '➖ Pilih Tahap Tolak';
-      showView('difficulty');
-    }
-
-    function startQuiz(level) {
-      currentDifficulty = level;
-      stats = { score: 0, wrong: 0, streak: 0 };
-      updateStats();
-      const modeLabel = currentMode === 'add' ? 'Tambah' : 'Tolak';
-      const levelLabel = level === 'easy' ? 'Senang' : level === 'medium' ? 'Sederhana' : 'Susah';
-      quizSubtitle.textContent = `${modeLabel} • Tahap ${levelLabel}`;
-      levelHint.textContent = getLevelHint(currentMode, level);
-      messageBox.textContent = 'Pilih jawapan yang betul ya! 🌟';
-      questionDino.textContent = '⭐';
-      showView('quiz');
-      nextQuestion();
-    }
-
-    function getLevelHint(mode, level) {
-      const hints = {
-        add: {
-          easy: 'Senang: nombor kecil 0 hingga 10.',
-          medium: 'Sederhana: nombor hingga 50 dengan jumlah lebih besar.',
-          hard: 'Susah: nombor hingga 999 dan lebih mencabar.',
-        },
-        sub: {
-          easy: 'Senang: tolak nombor kecil tanpa jawapan negatif.',
-          medium: 'Sederhana: tolak nombor hingga 60.',
-          hard: 'Susah: tolak nombor hingga 999 dan lebih mencabar.',
-        }
-      };
-      return hints[mode][level];
-    }
-
-    function rand(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function uniqueOptions(correct, spread) {
-      const set = new Set([correct]);
-      while (set.size < 3) {
-        const offset = rand(-spread, spread);
-        const candidate = Math.max(0, correct + offset);
-        set.add(candidate);
-      }
-      return Array.from(set).sort(() => Math.random() - 0.5);
-    }
-
-    function buildQuestion() {
-      let a, b, answer, spread;
-
-      if (currentMode === 'add') {
-        if (currentDifficulty === 'easy') {
-          a = rand(0, 10); b = rand(0, 10); spread = 5;
-        } else if (currentDifficulty === 'medium') {
-          a = rand(5, 50); b = rand(5, 50); spread = 12;
-        } else {
-          a = rand(25, 999); b = rand(25, 999); spread = 35;
-        }
-        answer = a + b;
-        return { text: `${a} + ${b} = ?`, answer, options: uniqueOptions(answer, spread) };
-      }
-
-      if (currentDifficulty === 'easy') {
-        a = rand(1, 10); b = rand(0, a); spread = 5;
-      } else if (currentDifficulty === 'medium') {
-        a = rand(15, 60); b = rand(0, a); spread = 12;
-      } else {
-        a = rand(100, 999); b = rand(10, a); spread = 35;
-      }
-
-      answer = a - b;
-      return { text: `${a} − ${b} = ?`, answer, options: uniqueOptions(answer, spread) };
-    }
-
-    function nextQuestion() {
-      currentQuestion = buildQuestion();
-      questionText.textContent = currentQuestion.text;
-      renderAnswers();
-    }
-
-    function renderAnswers() {
-      answersGrid.innerHTML = '';
-      currentQuestion.options.forEach(value => {
-        const btn = document.createElement('button');
-        btn.className = 'answer-btn';
-        btn.textContent = value;
-        btn.onclick = () => checkAnswer(value, btn);
-        answersGrid.appendChild(btn);
+    if (selected === correct) {
+      btn.classList.add('correct');
+      score++;
+      fb.innerText = '✅ ' + pick(correctMsgs);
+      fb.className = 'feedback correct-fb';
+      dinoEl.className = 'dino celebrate';
+    } else {
+      btn.classList.add('wrong');
+      lives--;
+      updateLives();
+      fb.innerText = `❌ ${pick(wrongMsgs)} Jawapan: ${correct}`;
+      fb.className = 'feedback wrong-fb';
+      dinoEl.className = 'dino shake';
+      allBtns.forEach(b => {
+        if (parseInt(b.innerText) === correct) b.classList.add('correct');
       });
     }
+    updateScore();
+    setTimeout(nextQuestion, 1400);
+  }
 
-    function checkAnswer(value, btn) {
-      const buttons = [...document.querySelectorAll('.answer-btn')];
-      buttons.forEach(b => b.disabled = true);
+  // ---- Skrin Tamat ----
+  function showEndScreen() {
+    document.getElementById('gameArea').style.display = 'none';
+    const endDiv = document.getElementById('endScreen');
+    endDiv.classList.add('show');
 
-      if (value === currentQuestion.answer) {
-        btn.classList.add('correct');
-        stats.score += 1;
-        stats.streak += 1;
-        const praise = ['Hebat!', 'Bagus sangat!', 'Pandainya!', 'Yeay, betul!'][rand(0, 3)];
-        messageBox.textContent = `${praise} 🌟`;
-        questionDino.textContent = ['⭐', '✨', '🥳', '🎉'][rand(0, 3)];
-        playCorrectSound();
-        playCuteDinoHappy();
-      } else {
-        btn.classList.add('wrong');
-        const correctBtn = buttons.find(b => Number(b.textContent) === currentQuestion.answer);
-        if (correctBtn) correctBtn.classList.add('correct');
-        stats.wrong += 1;
-        stats.streak = 0;
-        messageBox.textContent = `Cuba lagi ya! Jawapan betul ialah ${currentQuestion.answer}. 💛`;
-        questionDino.textContent = '🙂';
-        playWrongSound();
-        playCuteDinoOops();
-      }
+    let msg = '';
+    let starsHTML = '';
 
-      updateStats();
-      setTimeout(() => {
-        questionDino.textContent = '⭐';
-        nextQuestion();
-      }, 1200);
-    }
+    if (score >= 9)      { msg = '🏆 Luar biasa! Kamu CHAMPION!'; starsHTML = '⭐⭐⭐⭐⭐'; }
+    else if (score >= 7) { msg = '🎉 Sangat bagus! Teruskan!';    starsHTML = '⭐⭐⭐⭐'; }
+    else if (score >= 5) { msg = '👍 Bagus! Cuba lagi untuk lebih baik!'; starsHTML = '⭐⭐⭐'; }
+    else if (score >= 3) { msg = '💪 Jangan putus asa!';           starsHTML = '⭐⭐'; }
+    else                 { msg = '🌈 Cuba lagi, pasti boleh!';     starsHTML = '⭐'; }
 
-    function updateStats() {
-      scoreNum.textContent = stats.score;
-      wrongNum.textContent = stats.wrong;
-      streakNum.textContent = stats.streak;
-    }
+    if (lives <= 0) msg = '💔 Nyawa habis! Jom cuba lagi! 💪';
 
-    setSoundState(true);
-    showView('home');
-    soundToggle.addEventListener('click', () => toggleSound(true));
-    window.addEventListener('pointerdown', initAudio, { once: true });
-  </script>
+    document.getElementById('endMsg').innerText = msg;
+    document.getElementById('endScore').innerText = `${score} / ${totalQ}`;
+    document.getElementById('endStars').innerText = starsHTML;
+  }
+
+  // ---- Mulakan di Halaman Utama ----
+  showScreen('home');
+</script>
+
 </body>
 </html>
